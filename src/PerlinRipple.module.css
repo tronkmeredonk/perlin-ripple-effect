@@ -1,0 +1,34 @@
+.shell {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.replay {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: #111;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+  z-index: 30;
+}
+
+.replay:hover {
+  background: #000;
+  transform: translateX(-50%) scale(1.04);
+}
+
+.replay:active {
+  transform: translateX(-50%) scale(0.98);
+}
