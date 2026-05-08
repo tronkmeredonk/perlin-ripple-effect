@@ -1,22 +1,24 @@
 import { useState } from "react";
 import RippleAnimation from "./RippleAnimation";
 import ControlsPanel, { type Slider } from "./ControlsPanel";
+import usePersistentState from "./usePersistentState";
 import styles from "./PerlinRipple.module.css";
 
 export default function PerlinRipple() {
   const [playId, setPlayId] = useState(0);
 
-  const [staggerCount, setStaggerCount] = useState(3);
-  const [duration, setDuration] = useState(2);
-  const [uniformCount, setUniformCount] = useState(25);
-  const [randomCount, setRandomCount] = useState(50);
-  const [rStart, setRStart] = useState(70);
-  const [rEnd, setREnd] = useState(250);
-  const [noiseAmplitude, setNoiseAmplitude] = useState(20);
-  const [noiseFreq, setNoiseFreq] = useState(0.15);
-  const [noiseSpeed, setNoiseSpeed] = useState(0.4);
-  const [dotRadius, setDotRadius] = useState(1.5);
-  const [shrinkFactor, setShrinkFactor] = useState(0.5);
+  const [staggerCount, setStaggerCount] = usePersistentState("pg.staggerCount", 3);
+  const [duration, setDuration] = usePersistentState("pg.duration", 2);
+  const [uniformCount, setUniformCount] = usePersistentState("pg.uniformCount", 25);
+  const [randomCount, setRandomCount] = usePersistentState("pg.randomCount", 50);
+  const [rStart, setRStart] = usePersistentState("pg.rStart", 70);
+  const [rEnd, setREnd] = usePersistentState("pg.rEnd", 250);
+  const [noiseAmplitude, setNoiseAmplitude] = usePersistentState("pg.noiseAmplitude", 20);
+  const [noiseFreq, setNoiseFreq] = usePersistentState("pg.noiseFreq", 0.15);
+  const [noiseSpeed, setNoiseSpeed] = usePersistentState("pg.noiseSpeed", 0.4);
+  const [dotRadius, setDotRadius] = usePersistentState("pg.dotRadius", 1.5);
+  const [dotOpacity, setDotOpacity] = usePersistentState("pg.dotOpacity", 1);
+  const [shrinkFactor, setShrinkFactor] = usePersistentState("pg.shrinkFactor", 0.5);
 
   const sliders: Slider[] = [
     { label: "Number of circles", value: staggerCount, set: setStaggerCount, min: 1, max: 8, step: 1 },
@@ -30,6 +32,7 @@ export default function PerlinRipple() {
     { label: "Noise frequency", value: noiseFreq, set: setNoiseFreq, min: 0.01, max: 1, step: 0.01, format: (v) => v.toFixed(2) },
     { label: "Noise speed", value: noiseSpeed, set: setNoiseSpeed, min: 0, max: 2, step: 0.05, format: (v) => v.toFixed(2) },
     { label: "Dot radius", value: dotRadius, set: setDotRadius, min: 0.5, max: 6, step: 0.1, format: (v) => v.toFixed(1) },
+    { label: "Dot opacity", value: dotOpacity, set: setDotOpacity, min: 0.05, max: 1, step: 0.05, format: (v) => v.toFixed(2) },
   ];
 
   return (
@@ -48,6 +51,7 @@ export default function PerlinRipple() {
         noiseSpeed={noiseSpeed}
         dotRadius={dotRadius}
         shrinkFactor={shrinkFactor}
+        dotColor={`rgba(0,0,0,${dotOpacity})`}
       />
 
       <ControlsPanel sliders={sliders} />

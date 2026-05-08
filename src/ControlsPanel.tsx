@@ -13,11 +13,22 @@ export type Slider = {
 type Props = {
   title?: string;
   sliders: Slider[];
+  side?: "left" | "right";
+  inline?: boolean;
 };
 
-export default function ControlsPanel({ title = "Controls", sliders }: Props) {
+export default function ControlsPanel({
+  title = "Controls",
+  sliders,
+  side = "right",
+  inline = false,
+}: Props) {
   return (
-    <aside className={styles.panel}>
+    <aside
+      className={`${styles.panel} ${side === "left" ? styles.panelLeft : ""} ${
+        inline ? styles.panelInline : ""
+      }`}
+    >
       <h2 className={styles.panelTitle}>{title}</h2>
       {sliders.map((s) => (
         <label key={s.label} className={styles.control}>

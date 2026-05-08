@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import RippleAnimation from "./RippleAnimation";
 import ControlsPanel, { type Slider } from "./ControlsPanel";
+import usePersistentState from "./usePersistentState";
 import styles from "./MockupView.module.css";
 
-const MODAL_WIDTH = 780;
-const MODAL_HEIGHT = 460;
-
-const TIMING = {
-  morph: 2400,
-};
+const MODAL_WIDTH = 968;
+const MODAL_HEIGHT = 446;
+const RIPPLE_SIZE = 968;
 
 export default function MockupView() {
   const [playId, setPlayId] = useState(0);
@@ -16,26 +14,32 @@ export default function MockupView() {
 
   const [screen, setScreen] = useState<"a" | "b">("a");
 
-  const [staggerCount, setStaggerCount] = useState(3);
-  const [duration, setDuration] = useState(2);
-  const [uniformCount, setUniformCount] = useState(25);
-  const [randomCount, setRandomCount] = useState(50);
-  const [rStart, setRStart] = useState(70);
-  const [rEnd, setREnd] = useState(420);
-  const [noiseAmplitude, setNoiseAmplitude] = useState(20);
-  const [noiseFreq, setNoiseFreq] = useState(0.15);
-  const [noiseSpeed, setNoiseSpeed] = useState(0.4);
-  const [dotRadius, setDotRadius] = useState(1.5);
-  const [shrinkFactor, setShrinkFactor] = useState(0.5);
+  const [morphMs, setMorphMs] = usePersistentState("mu.morphMs", 2400);
+  const [fadeOutMs, setFadeOutMs] = usePersistentState("mu.fadeOutMs", 400);
+  const [fadeInMs, setFadeInMs] = usePersistentState("mu.fadeInMs", 400);
+  const [fadeInDelayMs, setFadeInDelayMs] = usePersistentState("mu.fadeInDelayMs", 150);
+
+  const [staggerCount, setStaggerCount] = usePersistentState("mu.staggerCount", 3);
+  const [duration, setDuration] = usePersistentState("mu.duration", 2);
+  const [uniformCount, setUniformCount] = usePersistentState("mu.uniformCount", 25);
+  const [randomCount, setRandomCount] = usePersistentState("mu.randomCount", 50);
+  const [rStart, setRStart] = usePersistentState("mu.rStart", 70);
+  const [rEnd, setREnd] = usePersistentState("mu.rEnd", 420);
+  const [noiseAmplitude, setNoiseAmplitude] = usePersistentState("mu.noiseAmplitude", 20);
+  const [noiseFreq, setNoiseFreq] = usePersistentState("mu.noiseFreq", 0.15);
+  const [noiseSpeed, setNoiseSpeed] = usePersistentState("mu.noiseSpeed", 0.4);
+  const [dotRadius, setDotRadius] = usePersistentState("mu.dotRadius", 1.5);
+  const [dotOpacity, setDotOpacity] = usePersistentState("mu.dotOpacity", 0.9);
+  const [shrinkFactor, setShrinkFactor] = usePersistentState("mu.shrinkFactor", 0.5);
 
   useEffect(() => {
     setScreen("a");
 
     if (paused) return;
 
-    const t = window.setTimeout(() => setScreen("b"), TIMING.morph);
+    const t = window.setTimeout(() => setScreen("b"), morphMs);
     return () => window.clearTimeout(t);
-  }, [playId, paused]);
+  }, [playId, paused, morphMs]);
 
   const replay = () => setPlayId((n) => n + 1);
 
@@ -51,6 +55,14 @@ export default function MockupView() {
     { label: "Noise frequency", value: noiseFreq, set: setNoiseFreq, min: 0.01, max: 1, step: 0.01, format: (v) => v.toFixed(2) },
     { label: "Noise speed", value: noiseSpeed, set: setNoiseSpeed, min: 0, max: 2, step: 0.05, format: (v) => v.toFixed(2) },
     { label: "Dot radius", value: dotRadius, set: setDotRadius, min: 0.5, max: 6, step: 0.1, format: (v) => v.toFixed(1) },
+    { label: "Dot opacity", value: dotOpacity, set: setDotOpacity, min: 0.05, max: 1, step: 0.05, format: (v) => v.toFixed(2) },
+  ];
+
+  const fadeSliders: Slider[] = [
+    { label: "Morph delay (s)", value: morphMs / 1000, set: (v) => setMorphMs(v * 1000), min: 0, max: 6, step: 0.1, format: (v) => v.toFixed(1) },
+    { label: "Fade out (s)", value: fadeOutMs / 1000, set: (v) => setFadeOutMs(v * 1000), min: 0, max: 2, step: 0.05, format: (v) => v.toFixed(2) },
+    { label: "Fade in (s)", value: fadeInMs / 1000, set: (v) => setFadeInMs(v * 1000), min: 0, max: 2, step: 0.05, format: (v) => v.toFixed(2) },
+    { label: "Fade in delay (s)", value: fadeInDelayMs / 1000, set: (v) => setFadeInDelayMs(v * 1000), min: 0, max: 2, step: 0.05, format: (v) => v.toFixed(2) },
   ];
 
   const onB = screen === "b";
@@ -77,10 +89,13 @@ export default function MockupView() {
           </svg>
         </button>
 
-        <div className={`${styles.screenA} ${onB ? styles.screenAExit : ""}`}>
+        <div
+          className={`${styles.screenA} ${onB ? styles.screenAExit : ""}`}
+          style={{ transition: `opacity ${fadeOutMs}ms ease` }}
+        >
           <div className={styles.rippleWrap}>
             <RippleAnimation
-              size={MODAL_WIDTH}
+              size={RIPPLE_SIZE}
               playId={playId}
               staggerCount={staggerCount}
               duration={duration}
@@ -93,7 +108,7 @@ export default function MockupView() {
               noiseFreq={noiseFreq}
               noiseSpeed={noiseSpeed}
               dotRadius={dotRadius}
-              dotColor="rgba(255,255,255,0.9)"
+              dotColor={`rgba(255,255,255,${dotOpacity})`}
               className={styles.rippleCanvas}
             />
           </div>
@@ -113,17 +128,25 @@ export default function MockupView() {
               <span>Your first deposit has arrived</span>
             </div>
 
-            <div className={styles.bigNumber}>$100</div>
-
-            <div className={styles.sublabel}>Deposited to Mercury Checking</div>
+            <div className={styles.titleGroup}>
+              <div className={styles.bigNumber}>$100</div>
+              <div className={styles.sublabel}>
+                Deposited into Mercury checking
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className={`${styles.screenB} ${onB ? styles.screenBActive : ""}`}>
+        <div
+          className={`${styles.screenB} ${onB ? styles.screenBActive : ""}`}
+          style={{
+            transition: `opacity ${fadeInMs}ms ease ${fadeInDelayMs}ms`,
+          }}
+        >
           <div className={styles.screenBBody}>
             <div className={styles.pillB}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="8" r="7" fill="#139d3f" />
+                <circle cx="8" cy="8" r="7" fill="#188554" />
                 <path
                   d="M4.5 8.5L6.5 10.5L11.5 5.5"
                   stroke="white"
@@ -224,7 +247,10 @@ export default function MockupView() {
         </div>
       </div>
 
-      <ControlsPanel sliders={sliders} />
+      <div className={styles.panelStack}>
+        <ControlsPanel sliders={sliders} title="Ripple" inline />
+        <ControlsPanel sliders={fadeSliders} title="Transition" inline />
+      </div>
 
       <div className={styles.actions}>
         <button

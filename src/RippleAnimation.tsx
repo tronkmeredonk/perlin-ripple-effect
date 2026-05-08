@@ -52,9 +52,17 @@ export default function RippleAnimation({
         { length: randomCount },
         () => rand() * Math.PI * 2
       );
-      return [...uniform, ...random];
+      const angles = [...uniform, ...random];
+      // Per-point rest position computed once. Noise is sampled from this
+      // stable position so each dot has a consistent "noise identity"
+      // regardless of where its ring is in its expansion.
+      return angles.map((angle) => ({
+        angle,
+        restX: Math.cos(angle) * rEnd,
+        restY: Math.sin(angle) * rEnd,
+      }));
     });
-  }, [staggerCount, uniformCount, randomCount]);
+  }, [staggerCount, uniformCount, randomCount, rEnd]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -74,7 +82,7 @@ export default function RippleAnimation({
         i === 0 ? 0 : baseGap * (2 - Math.pow(0.5, i - 1));
       const totalDuration = delayFor(staggerCount - 1) + duration;
 
-      circles.forEach((angles, i) => {
+      circles.forEach((points, i) => {
         const delay = delayFor(i);
         const raw = elapsed - delay;
         if (raw < 0 || raw > duration) return;
@@ -89,17 +97,20 @@ export default function RippleAnimation({
 
         ctx.globalAlpha = opacity;
 
-        angles.forEach((angle) => {
+        points.forEach(({ angle, restX, restY }) => {
           const baseX = center + Math.cos(angle) * r;
           const baseY = center + Math.sin(angle) * r;
 
+          // Sample noise at the point's stable rest position (not at its
+          // moving baseX/baseY). Time still drifts the noise field for a
+          // breathing feel, but the spatial seed per dot stays constant.
           const nx = noise2D(
-            baseX * noiseFreq,
-            baseY * noiseFreq + elapsed * noiseSpeed
+            restX * noiseFreq,
+            restY * noiseFreq + elapsed * noiseSpeed
           );
           const ny = noise2D(
-            baseX * noiseFreq + 100,
-            baseY * noiseFreq + elapsed * noiseSpeed
+            restX * noiseFreq + 100,
+            restY * noiseFreq + elapsed * noiseSpeed
           );
 
           const x = baseX + nx * noiseAmplitude * scalar;

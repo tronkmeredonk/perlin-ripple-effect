@@ -1,17 +1,28 @@
 # Perlin ripple effect
 
-Small **React + TypeScript** demo: animated particle rings with Perlin noise (from the original zip). Runs with **Vite** on your machine.
+Small **React + TypeScript** demo: animated particle rings with Perlin noise + a Mercury Deposit Celebration UI mockup + a falling-sand "Rain" tab. Runs with **Vite**.
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/tronkmeredonk/perlin-ripple-effect)
+
+**Live demo:** [perlin-ripple-effect.vercel.app](https://perlin-ripple-effect.vercel.app)
+
+## Try it in your browser (no setup)
+
+Click **Open in GitHub Codespaces** above (you need a GitHub account). It spins up a cloud VSCode with the dev server already running — about 30 seconds the first time. The Vite preview opens automatically next to the editor.
 
 ## Run locally
 
 ```bash
-cd ~/Desktop/perlin-ripple-effect
 npm install
 npm run dev
 ```
 
 Open the URL Vite prints (usually `http://localhost:5173`).
 
-## Project type
+## Tabs
 
-This is a standalone **Vite** app, not part of `mercury-web`. To use the effect inside Mercury, copy `src/PerlinRipple.tsx` and `src/perlin.ts` (and adapt styling to design tokens / CSS Modules there). See `INSTRUCTIONS.md` for parameter knobs.
+- **Playground** — bare canvas with all the ripple parameters exposed as sliders
+- **UI Mockup** — Mercury "Deposit Celebration" modal that morphs to a transfer card
+- **Rain** — same modal, but with falling/settling sand particles instead of ripples
+
+All slider values persist in `localStorage` per tab.

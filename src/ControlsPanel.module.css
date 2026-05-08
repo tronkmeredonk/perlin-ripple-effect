@@ -18,6 +18,21 @@
   z-index: 20;
 }
 
+.panelLeft {
+  right: auto;
+  left: 24px;
+}
+
+.panelInline {
+  position: static;
+  top: auto;
+  right: auto;
+  left: auto;
+  max-height: none;
+  overflow-y: visible;
+  flex-shrink: 0;
+}
+
 .panelTitle {
   margin: 0 0 4px;
   font-size: 13px;

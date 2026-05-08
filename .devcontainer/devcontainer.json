@@ -1,0 +1,22 @@
+{
+  "name": "Perlin Ripple Effect",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "postCreateCommand": "npm install",
+  "postAttachCommand": "npm run dev -- --host 0.0.0.0",
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "openPreview",
+      "visibility": "public"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}

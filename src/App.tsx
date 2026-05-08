@@ -1,9 +1,16 @@
 import { useState } from "react";
 import PerlinRipple from "./PerlinRipple";
 import MockupView from "./MockupView";
+import RainView from "./RainView";
 import styles from "./App.module.css";
 
-type Tab = "playground" | "mockup";
+type Tab = "playground" | "mockup" | "rain";
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "playground", label: "Playground" },
+  { id: "mockup", label: "UI Mockup" },
+  { id: "rain", label: "Rain" },
+];
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("playground");
@@ -11,23 +18,21 @@ export default function App() {
   return (
     <div className={styles.app}>
       <nav className={styles.tabs}>
-        <button
-          type="button"
-          className={tab === "playground" ? styles.tabActive : styles.tab}
-          onClick={() => setTab("playground")}
-        >
-          Playground
-        </button>
-        <button
-          type="button"
-          className={tab === "mockup" ? styles.tabActive : styles.tab}
-          onClick={() => setTab("mockup")}
-        >
-          UI Mockup
-        </button>
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className={tab === t.id ? styles.tabActive : styles.tab}
+            onClick={() => setTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
       </nav>
 
-      {tab === "playground" ? <PerlinRipple /> : <MockupView />}
+      {tab === "playground" && <PerlinRipple />}
+      {tab === "mockup" && <MockupView />}
+      {tab === "rain" && <RainView />}
     </div>
   );
 }
